@@ -38,13 +38,47 @@ export default function UploadPage() {
     }
   };
 
-  const handleSendToDirector = () => {
-    toast.success(
-      "Data Adidas Indonesia telah dikirim ke Direktur untuk di-approve!"
-    );
-    setFile(null);
-    setDataPreview([]);
+  // const handleSendToDirector = () => {
+  //   toast.success(
+  //     "Data Adidas Indonesia telah dikirim ke Direktur untuk di-approve!"
+  //   );
+  //   setFile(null);
+  //   setDataPreview([]);
+  // };
+
+  const handleSendToDirector = async () => {
+    if (!file) {
+      toast.error("Silakan pilih file terlebih dahulu!");
+      return;
+    }
+
+    try {
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("Data berhasil diproses dan dikirim ke Direktur!");
+
+        setFile(null);
+        setDataPreview([]);
+      } else {
+        toast.error(result.error || "Gagal mengunggah data");
+      }
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Terjadi kesalahan jaringan saat mengunggah file.");
+    }
   };
+
+  
 
   return (
     <div className="space-y-8 pb-20">
